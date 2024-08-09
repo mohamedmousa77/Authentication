@@ -1,0 +1,18 @@
+// ignore_for_file: file_names
+//! This file will contain the functions that take handel
+//! and save the [Token] and the personal info received from the API request in [shared preferences].
+
+import 'package:ecommerceauth/models/token-info-model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class TokenService {
+  Future<void> saveAuthData(
+      {required String email,
+      required String password,
+      required TokenInfo token}) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setString("token", token.token);
+    pref.setString("email", email);
+    pref.setString("password", password);
+  }
+}
