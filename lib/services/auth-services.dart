@@ -54,6 +54,83 @@ Future<void> loginByEmail(
   } catch (e) {
     throw HttpConfig().handleError(e);
   }
-  //? TO login with the email address.
-  Future registerAsCustomer() async {}
+  //? This function to create an account for the customer.
+  Future<void> registerAsCustomer({
+    required String email,
+    required String password,
+    required String name,
+    required String phoneNumber,
+  }) async {
+    try {
+      await HttpConfig().checkConnectivity();
+      Uri localLink = HttpConfig().getLinks(ApiConstants.register_path);
+      http.Response res = await http.post(localLink,
+          body: json.encode(<String, dynamic>{
+            "full_name": name,
+            "email": email,
+            "password": password,
+            "phone": int.tryParse(phoneNumber),
+            "phone_code": "",
+            "type": "customer",
+          }),
+          headers: HttpConfig().getHeader());
+      Map<String, dynamic> data = json.decode(res.body);
+      if (HttpConfig().validateStatusCode(res.statusCode)) {
+        if (data["payload"] is! Map<String, dynamic>) {
+          throw data["messages"];
+        }
+      } else {
+        throw data["messages"];
+      }
+      TokenInfo token = TokenInfo.fromJson(data["payload"]);
+      // The next line fo code will call the function to save the
+      //personal info and the token in shared prefencess.
+      await TokenService()
+          .saveAuthData(email: email, password: password, token: token);
+      // todo: Here will call the function to request the profile info
+    } catch (error) {
+      throw HttpConfig().handleError(error);
+    }
+  }
+
+  Future<void> registerAsProvider({
+    required String email,
+    required String password,
+    required String name,
+    required String phoneNumber,
+    required String whatsApp,
+    required String cityId,
+    required String areaId,
+  }) async {
+    try {
+      await HttpConfig().checkConnectivity();
+      Uri localLink = HttpConfig().getLinks(ApiConstants.register_path);
+      http.Response res = await http.post(localLink,
+          body: json.encode(<String, dynamic>{
+            "full_name": name,
+            "email": email,
+            "password": password,
+            "phone": int.tryParse(phoneNumber),
+            "phone_code": "",
+            "whatsapp_number": whatsApp,
+            "city_id": cityId,
+            "area_id": areaId,
+            "type": "service-owner",
+          }),
+          headers: HttpConfig().getHeader());
+      Map<String, dynamic> data = json.decode(res.body);
+      if (HttpConfig().validateStatusCode(res.statusCode)) {
+        if (data["payload"] is! Map<String, dynamic>) {
+          throw data["messages"];
+        }
+        TokenInfo token = TokenInfo.fromJson(data['payload']);
+        await TokenService()
+            .saveAuthData(email: email, password: password, token: token);
+      } else {
+        throw data["messages"];
+      }
+    } catch (error) {
+      HttpConfig().handleError(error);
+    }
+  }
 }
