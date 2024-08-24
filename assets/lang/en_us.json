@@ -1,0 +1,13 @@
+{
+    "select-language": "Please! choose your language",
+    "english": "English",
+    "arabic": "Arabic",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "phone": "Phone",
+    "username": "Username",
+    "sign-up": "Sign up",
+    "login": "Login",
+    "sign-in": "Sign in"
+}
